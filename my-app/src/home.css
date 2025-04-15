@@ -1,0 +1,275 @@
+
+
+
+.welcome-section {
+  padding: 2rem 0 4rem 0;
+  margin-right: auto;
+  margin-left: 0;
+  font-family: 'Instrument Sans', sans-serif;
+  margin-bottom: -90px;
+  
+}
+  
+  .welcome-heading {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+    font-family: 'Instrument Sans', sans-serif;
+  }
+  
+  .welcome-text {
+    text-align: left;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #4a5568;
+    max-width: 1000px;
+    margin: 0 auto 2rem auto;
+    padding-right:500px;
+    font-family: 'Instrument Sans', sans-serif;
+  }
+  
+  /* Carousel styling */
+  .carousel-container {
+    position: relative;
+    max-width: 500px;
+    max-height: 500px ;           /* Adjust maximum width as needed */
+    margin: 0 auto 3rem auto;
+    overflow: hidden;
+    min-width: auto;
+    aspect-ratio: 1 / 2;       /* Enforce a portrait aspect ratio */
+   
+}
+.carousel-container {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto 3rem auto;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-bg-rectangle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+
+.carousel-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Adjust the dots container to overlay above the image */
+.carousel-dots {
+    position: absolute;
+    bottom: 10px;               /* Adjust this value as needed */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;              /* Optional: adjust spacing between dots */
+    z-index: 1;               /* Ensures the dots appear above the image */
+    margin: 0;                /* Remove any default margins */
+    padding: 0;               /* Remove any default padding */
+}
+
+/* Style individual dots */
+.carousel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #cbd5e0;
+    cursor: pointer;
+    border: none;
+}
+
+.carousel-dot.active {
+    background-color: #0d9488;
+}
+
+  
+  .carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .carousel-button:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+  
+  .carousel-button.prev {
+    left: 15px;
+  }
+  
+  .carousel-button.next {
+    right: 15px;
+  }
+  
+  .carousel-dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+  
+  .carousel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #cbd5e0;
+    margin: 0 5px;
+    cursor: pointer;
+    border: none;
+  }
+  
+  .carousel-dot.active {
+    background-color: #0d9488;
+  }
+  
+  /* CTA button */
+  .cta-container {
+    text-align: center;
+    margin: 2rem 0;
+  }
+  
+  .cta-button {
+    background-color: #0d9488;
+    color: white;
+    font-weight: 700;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .cta-button:hover {
+    background-color: #0f766e;
+  }
+  .nav-list {
+    font-family: 'Jaldi', sans-serif;
+  }
+  .location-section {
+    background-color: #0d9488;
+    padding: 3rem 0;
+    color: white;
+  }
+  
+  .location-heading {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  .location-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  .map-container {
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 2rem;
+  }
+  
+  .map-placeholder {
+    background-color: #e2e8f0;
+    border: 2px solid #2c7a7b;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2d3748;
+  }
+  
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .contact-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  
+  .instagram-icon,
+  .phone-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    fill: white;
+  }
+  
+  .contact-text {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+  }
+  
+  .contact-text:hover {
+    text-decoration: underline;
+  }
+  
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .welcome-heading {
+      font-size: 1.8rem;
+    }
+    
+    .carousel-image {
+      height: 300px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .welcome-text {
+      font-size: 1rem;
+    }
+    
+    .carousel-image {
+      height: 250px;
+    }
+    
+    .carousel-button {
+      width: 35px;
+      height: 35px;
+    }
+    .map-placeholder {
+      height: 200px;
+    }
+  }
