@@ -1,0 +1,53 @@
+.socialLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.socialLink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  transition: opacity 0.2s ease;
+}
+
+.socialLink:hover {
+  opacity: 0.8;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+.icon {
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.linkText {
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .socialLinks {
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 1rem 0;
+  }
+  
+  .linkText {
+    display: none;
+  }
+  
+  .iconContainer {
+    margin-right: 0;
+  }
+}

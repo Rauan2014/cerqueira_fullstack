@@ -1,0 +1,33 @@
+.navigation ul {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink {
+  color: white;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: opacity 0.2s ease;
+}
+
+.navLink:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.active {
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .navigation ul {
+    gap: 1rem;
+  }
+  
+  .navLink {
+    font-size: 1rem;
+  }
+}

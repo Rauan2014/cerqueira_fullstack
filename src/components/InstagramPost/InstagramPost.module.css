@@ -1,0 +1,121 @@
+/* InstagramPost.module.css */
+.postContainer {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+}
+
+.postHeader {
+  margin-bottom: 0.5rem;
+}
+
+.postTitle {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin: 0;
+  color: #0a8a8a; /* COR ATUALIZADA */
+}
+
+.postMeta span {
+  font-size: 0.875rem;
+  color: #555;
+  margin-right: 0.5rem;
+}
+
+.mediaContainer {
+  position: relative;
+  width: 100%;
+}
+
+.mediaWrapper {
+  width: 100%;
+  overflow: hidden;
+}
+
+.media {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 0.5rem;
+}
+
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.3);
+  color: #fff;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.navButton[aria-label="Anterior"] {
+  left: 0.5rem;
+}
+
+.navButton[aria-label="Próxima"] {
+  right: 0.5rem;
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.dot, .activeDot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: #ccc;
+  border: none;
+  margin: 0 0.25rem;
+  padding: 0;
+}
+
+.activeDot {
+  background: #333;
+}
+
+.caption {
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
+  color: #333;
+}
+
+.postStats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.postStats span {
+  font-size: 0.875rem;
+}
+
+.commentsSection {
+  margin-top: 1rem;
+  border-top: 1px solid #eee;
+  padding-top: 0.5rem;
+}
+
+.comment {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.commentUser {
+  font-weight: bold;
+  margin-right: 0.25rem;
+}
+
+.commentText {
+  color: #333;
+}
