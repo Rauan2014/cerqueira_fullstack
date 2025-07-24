@@ -44,6 +44,13 @@
       "static/chunks/261-23213edf9beddb04.js",
       "static/chunks/app/especialidades/page-36a07fb342a12465.js"
     ],
+    "/api/contato/route": [
+      "static/chunks/webpack-d239005d694a451a.js",
+      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
+      "static/chunks/964-c3e49cf7341645bb.js",
+      "static/chunks/main-app-93c6c9f2ce43140c.js",
+      "static/chunks/app/api/contato/route-ee8fb2b9ccc8fbc5.js"
+    ],
     "/api/config/route": [
       "static/chunks/webpack-d239005d694a451a.js",
       "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
@@ -57,13 +64,6 @@
       "static/chunks/964-c3e49cf7341645bb.js",
       "static/chunks/main-app-93c6c9f2ce43140c.js",
       "static/chunks/app/api/instagram/route-ee8fb2b9ccc8fbc5.js"
-    ],
-    "/api/contato/route": [
-      "static/chunks/webpack-d239005d694a451a.js",
-      "static/chunks/4bd1b696-cf72ae8a39fa05aa.js",
-      "static/chunks/964-c3e49cf7341645bb.js",
-      "static/chunks/main-app-93c6c9f2ce43140c.js",
-      "static/chunks/app/api/contato/route-ee8fb2b9ccc8fbc5.js"
     ]
   }
 }

@@ -25,7 +25,7 @@
       "wasm": [],
       "assets": [],
       "env": {
-        "__NEXT_BUILD_ID": "khaGJc2FFkmZ__nLCLUKa",
+        "__NEXT_BUILD_ID": "i9KCXa0HPmha16VkTLXCE",
         "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "5p8x9yS0vyo/BOvTxSq6ZPb4XMNEP11DB0pIXSeceyU=",
         "__NEXT_PREVIEW_MODE_ID": "d9dc2e203a5370f301510911ed5869b9",
         "__NEXT_PREVIEW_MODE_SIGNING_KEY": "ed6e65f081f39851d23954098f66cb29b28dce3c39fb51612728c077e988cd02",
@@ -34,6 +34,36 @@
     }
   },
   "functions": {
+    "/api/contato/route": {
+      "files": [
+        "server/server-reference-manifest.js",
+        "server/app/api/contato/route_client-reference-manifest.js",
+        "server/middleware-build-manifest.js",
+        "server/middleware-react-loadable-manifest.js",
+        "server/next-font-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "server/edge-runtime-webpack.js",
+        "server/edge-chunks/907.js",
+        "server/app/api/contato/route.js"
+      ],
+      "name": "app/api/contato/route",
+      "page": "/api/contato/route",
+      "matchers": [
+        {
+          "regexp": "^/api/contato$",
+          "originalSource": "/api/contato"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "i9KCXa0HPmha16VkTLXCE",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "5p8x9yS0vyo/BOvTxSq6ZPb4XMNEP11DB0pIXSeceyU=",
+        "__NEXT_PREVIEW_MODE_ID": "d9dc2e203a5370f301510911ed5869b9",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "ed6e65f081f39851d23954098f66cb29b28dce3c39fb51612728c077e988cd02",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "0607fdbdf9322d74aa700ad361a849e4404f7b63bab6d0fbb63cef27699c785f"
+      }
+    },
     "/api/config/route": {
       "files": [
         "server/server-reference-manifest.js",
@@ -57,7 +87,7 @@
       "wasm": [],
       "assets": [],
       "env": {
-        "__NEXT_BUILD_ID": "khaGJc2FFkmZ__nLCLUKa",
+        "__NEXT_BUILD_ID": "i9KCXa0HPmha16VkTLXCE",
         "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "5p8x9yS0vyo/BOvTxSq6ZPb4XMNEP11DB0pIXSeceyU=",
         "__NEXT_PREVIEW_MODE_ID": "d9dc2e203a5370f301510911ed5869b9",
         "__NEXT_PREVIEW_MODE_SIGNING_KEY": "ed6e65f081f39851d23954098f66cb29b28dce3c39fb51612728c077e988cd02",
@@ -87,37 +117,7 @@
       "wasm": [],
       "assets": [],
       "env": {
-        "__NEXT_BUILD_ID": "khaGJc2FFkmZ__nLCLUKa",
-        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "5p8x9yS0vyo/BOvTxSq6ZPb4XMNEP11DB0pIXSeceyU=",
-        "__NEXT_PREVIEW_MODE_ID": "d9dc2e203a5370f301510911ed5869b9",
-        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "ed6e65f081f39851d23954098f66cb29b28dce3c39fb51612728c077e988cd02",
-        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "0607fdbdf9322d74aa700ad361a849e4404f7b63bab6d0fbb63cef27699c785f"
-      }
-    },
-    "/api/contato/route": {
-      "files": [
-        "server/server-reference-manifest.js",
-        "server/app/api/contato/route_client-reference-manifest.js",
-        "server/middleware-build-manifest.js",
-        "server/middleware-react-loadable-manifest.js",
-        "server/next-font-manifest.js",
-        "server/interception-route-rewrite-manifest.js",
-        "server/edge-runtime-webpack.js",
-        "server/edge-chunks/907.js",
-        "server/app/api/contato/route.js"
-      ],
-      "name": "app/api/contato/route",
-      "page": "/api/contato/route",
-      "matchers": [
-        {
-          "regexp": "^/api/contato$",
-          "originalSource": "/api/contato"
-        }
-      ],
-      "wasm": [],
-      "assets": [],
-      "env": {
-        "__NEXT_BUILD_ID": "khaGJc2FFkmZ__nLCLUKa",
+        "__NEXT_BUILD_ID": "i9KCXa0HPmha16VkTLXCE",
         "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "5p8x9yS0vyo/BOvTxSq6ZPb4XMNEP11DB0pIXSeceyU=",
         "__NEXT_PREVIEW_MODE_ID": "d9dc2e203a5370f301510911ed5869b9",
         "__NEXT_PREVIEW_MODE_SIGNING_KEY": "ed6e65f081f39851d23954098f66cb29b28dce3c39fb51612728c077e988cd02",

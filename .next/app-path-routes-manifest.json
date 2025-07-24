@@ -4,7 +4,7 @@
   "/page": "/",
   "/blog/page": "/blog",
   "/especialidades/page": "/especialidades",
+  "/api/contato/route": "/api/contato",
   "/api/config/route": "/api/config",
-  "/api/instagram/route": "/api/instagram",
-  "/api/contato/route": "/api/contato"
+  "/api/instagram/route": "/api/instagram"
 }
