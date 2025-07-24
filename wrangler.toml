@@ -6,5 +6,9 @@ binding = "DB"
 database_name = "cerqueira-db-prod"
 database_id = "seu-database-id-prod"
 
+# Assets configuration for deployment
+[assets]
+directory = ".next"
+
 # For Next.js on Workers
 main = ".next/server/middleware.js"
