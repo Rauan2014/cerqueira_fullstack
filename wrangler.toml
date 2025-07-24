@@ -1,11 +1,10 @@
 name = "cerqueira-fullstack"
 compatibility_date = "2024-07-25"
 
-# Remove D1 database for Pages deployment
-# [[d1_databases]]
-# binding = "DB" 
-# database_name = "cerqueira-db-prod"
-# database_id = "seu-database-id-prod"
+[[d1_databases]]
+binding = "DB"
+database_name = "cerqueira-db-prod"
+database_id = "seu-database-id-prod"
 
-# Pages configuration
-pages_build_output_dir = ".next"
+# For Next.js on Workers
+main = ".next/server/middleware.js"
