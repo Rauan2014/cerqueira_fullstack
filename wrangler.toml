@@ -9,7 +9,13 @@ binding = "DB"
 database_name = "cerqueira-db-prod"
 database_id = "seu-database-id-prod"
 
-# Static assets for large files
+# Static assets for large files - exclude cache
 [assets]
 directory = ".next"
 binding = "ASSETS"
+exclude = [
+  "cache/**/*",
+  "**/*.map",
+  "server/**/*.js.map",
+  "static/chunks/**/*.map"
+]
