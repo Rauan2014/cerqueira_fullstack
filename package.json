@@ -84,7 +84,6 @@
   "overrides": {
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "@types/react": "^19.1.8",
     "date-fns": "^4.1.0"
   }
 }
