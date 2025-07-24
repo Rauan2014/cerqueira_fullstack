@@ -13,19 +13,11 @@ main = "worker/index.js"
 # Static assets for large files - exclude cache
 
 [assets]
-
 directory = ".next"
-
 binding = "ASSETS"
-
 exclude = [
-
-  "cache/**/*",
-
-  "**/*.map",
-
-  "server/**/*.js.map",
-
-  "static/chunks/**/*.map"
-
+  "cache/**/*",
+  "**/*.map",
+  "server/**/*.js.map",
+  "static/chunks/**/*.map"
 ]
