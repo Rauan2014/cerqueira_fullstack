@@ -4,8 +4,6 @@ compatibility_date = "2024-07-25"
 # Worker script configuration
 main = "worker/index.js"
 
-
-
 # Static assets for large files - exclude cache
 [assets]
 directory = ".next"
