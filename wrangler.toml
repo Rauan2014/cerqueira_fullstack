@@ -1,14 +1,15 @@
 name = "cerqueira-fullstack"
 compatibility_date = "2024-07-25"
 
+# Worker script configuration
+main = "worker/index.js"
+
 [[d1_databases]]
 binding = "DB"
 database_name = "cerqueira-db-prod"
 database_id = "seu-database-id-prod"
 
-# Assets configuration for deployment
+# Static assets for large files
 [assets]
 directory = ".next"
-
-# For Next.js on Workers
-main = ".next/server/middleware.js"
+binding = "ASSETS"
