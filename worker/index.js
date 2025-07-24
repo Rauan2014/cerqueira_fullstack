@@ -1,28 +1,13 @@
-// Worker script for Next.js app with large files
+// _worker.js - Adapted for Cloudflare Pages
+
+// Import the Next.js app handler. 
+// Note the path is now './' instead of '../'
+import { default as handler } from './.next/server/app-render.js';
+
 export default {
   async fetch(request, env, ctx) {
-    try {
-      // Import the Next.js app handler
-      const { default: handler } = await import('../.next/server/app-render.js');
-      
-      // Handle the request with Next.js
-      return await handler(request, env, ctx);
-    } catch (error) {
-      console.error('Worker error:', error);
-      
-      // Fallback: try to serve static assets
-      const url = new URL(request.url);
-      const assetResponse = await env.ASSETS.fetch(request);
-      
-      if (assetResponse.status !== 404) {
-        return assetResponse;
-      }
-      
-      // Return error response
-      return new Response(`Error: ${error.message}`, {
-        status: 500,
-        headers: { 'Content-Type': 'text/plain' }
-      });
-    }
+    // Pass the request directly to the Next.js handler.
+    // Static assets are already handled by the Pages platform automatically.
+    return handler(request, env, ctx);
   }
 };
