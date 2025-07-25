@@ -1,5 +1,7 @@
 name = "cerqueira_fullstack"
 compatibility_date = "2024-07-25"
 
-# This tells Pages where to find the static part of your Next.js app after the build.
 pages_build_output_dir = ".vercel/output/static"
+
+# Add this line to enable Node.js compatibility
+compatibility_flags = ["nodejs_compat"]
