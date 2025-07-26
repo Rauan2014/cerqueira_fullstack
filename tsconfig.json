@@ -1,14 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "types": [
-      "@cloudflare/workers-types/2023-07-01"
-    ],
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -26,20 +18,11 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     },
+    // This is the corrected line
+    "types": ["node", "@cloudflare/workers-types"] 
   },
-  "include": [
-    "next-env.d.ts",
-    "env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "next.config.mjs"
-, "src/middleware.js"  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }
