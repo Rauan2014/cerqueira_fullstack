@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "ANALYZE=true next build",
     "build:cf": "next build && find .next -type f -name '*.map' -delete && npx @cloudflare/next-on-pages",
     "preview:cf": "npm run build:cf && wrangler pages dev .next",
     "start": "next start",
@@ -59,7 +59,6 @@
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.54.2",
     "react-resizable-panels": "^2.1.7",
-    "recharts": "^2.12.4",
     "sonner": "^1.7.2",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
