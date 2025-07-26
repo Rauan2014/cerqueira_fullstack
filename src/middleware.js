@@ -1,13 +1,13 @@
-'use client';
-
-import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { NextResponse } from 'next/server';
+import { jwtVerify } from 'jose';
 
 // Chave secreta para verificação de tokens JWT
-const JWT_SECRET = process.env.JWT_SECRET || 'cerqueira-psicologia-secret-key-2025';
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'cerqueira-psicologia-secret-key-2025'
+);
 
 // Middleware para verificar autenticação
-export function middleware(request) {
+export async function middleware(request) {
   // Obter o token do cabeçalho Authorization
   const authHeader = request.headers.get('Authorization');
   
@@ -22,13 +22,13 @@ export function middleware(request) {
   const token = authHeader.split(' ')[1];
   
   try {
-    // Verificar o token
-    const decoded = jwt.verify(token, JWT_SECRET);
+    // Verificar o token com 'jose'
+    const { payload: decoded } = await jwtVerify(token, JWT_SECRET);
     
     // Adicionar informações do usuário ao cabeçalho da requisição
     const requestHeaders = new Headers(request.headers);
-    requestHeaders.set('x-user-id', decoded.id);
-    requestHeaders.set('x-user-email', decoded.email);
+    requestHeaders.set('x-user-id', String(decoded.id));
+    requestHeaders.set('x-user-email', String(decoded.email));
     
     // Continuar com a requisição
     return NextResponse.next({
@@ -37,6 +37,7 @@ export function middleware(request) {
       },
     });
   } catch (error) {
+    console.error('JWT Verification Error:', error.code, error.message);
     return NextResponse.json(
       { error: 'Acesso não autorizado. Token inválido ou expirado.' },
       { status: 401 }
@@ -45,7 +46,6 @@ export function middleware(request) {
 }
 
 // Configurar quais rotas devem ser protegidas pelo middleware
-// Removido '/api/instagram/admin/:path*' pois agora é uma Cloudflare Pages Function
 export const config = {
   matcher: [
     '/api/admin/:path*',
