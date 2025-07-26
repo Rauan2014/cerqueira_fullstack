@@ -99,6 +99,10 @@ function formatInstagramMedia(mediaItems) {
 // --- Main Route Handler (Fixed for Cloudflare) ---
 export async function GET(request) {
   try {
+    // Debug: Check if environment variable is available
+    console.log('Access token exists:', !!process.env.INSTAGRAM_ACCESS_TOKEN);
+    console.log('Access token first 10 chars:', process.env.INSTAGRAM_ACCESS_TOKEN?.substring(0, 10));
+    
     debugLog('=== Instagram API GET Request Started ===');
     const { searchParams } = new URL(request.url);
     const mediaId = searchParams.get('id');
