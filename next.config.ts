@@ -7,18 +7,14 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // This helps the bundler understand how to handle edge functions
   experimental: {
-    serverComponentsExternalPackages: ['@opentelemetry/api'],
+    serverComponentsExternalPackages: ['async_hooks'],
   },
-  // Explicitly handle crypto for the edge runtime
-  webpack: (config, { isServer, webpack }) => {
+  // This webpack config is crucial for the edge runtime
+  webpack: (config, { isServer }) => {
     if (isServer) {
-      config.plugins.push(
-        new webpack.ProvidePlugin({
-          crypto: ["crypto"],
-        })
-      );
+      // Exclude node:crypto from the edge bundle, as 'jose' uses Web Crypto
+      config.externals.push('node:crypto');
     }
     return config;
   },
