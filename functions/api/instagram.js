@@ -1,8 +1,9 @@
-// functions/api/instagram.js
+// Remove the edge runtime for Cloudflare compatibility
+// export const runtime = 'edge'; // Comment this out
 
 // --- Configuration ---
 const API_BASE_URL = 'https://graph.instagram.com';
-const CACHE_REVALIDATE_SECONDS = 900; // Cache data for 15 minutes
+const CACHE_REVALIDATE_SECONDS = 900;
 
 // --- Helper Functions ---
 function debugLog(message, data = null) {
@@ -19,8 +20,8 @@ function generateTitleFromCaption(caption) {
 }
 
 // --- Central API Client ---
-async function instagramApiRequest(endpoint, params = {}, env) {
-  const accessToken = env.INSTAGRAM_ACCESS_TOKEN;
+async function instagramApiRequest(endpoint, params = {}) {
+  const accessToken = process.env.INSTAGRAM_ACCESS_TOKEN;
   if (!accessToken) {
     throw new Error('Instagram Access Token is not configured.');
   }
@@ -30,12 +31,7 @@ async function instagramApiRequest(endpoint, params = {}, env) {
   
   debugLog(`Fetching from Instagram API: ${endpoint}`, params);
 
-  const response = await fetch(url, {
-    headers: {
-      'Cache-Control': `public, max-age=${CACHE_REVALIDATE_SECONDS}`,
-    },
-  });
-
+  const response = await fetch(url);
   const data = await response.json();
 
   if (!response.ok) {
@@ -48,21 +44,21 @@ async function instagramApiRequest(endpoint, params = {}, env) {
 }
 
 // --- Instagram Service Functions ---
-async function getInstagramProfile(env) {
+async function getInstagramProfile() {
   const fields = 'id,username,account_type,media_count';
-  return instagramApiRequest('/me', { fields }, env);
+  return instagramApiRequest('/me', { fields });
 }
 
-async function getInstagramMedia({ limit = 25, after = null } = {}, env) {
+async function getInstagramMedia({ limit = 25, after = null } = {}) {
   const fields = 'id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,username,children{id,media_type,media_url,thumbnail_url}';
   const params = { fields, limit };
   if (after) params.after = after;
-  return instagramApiRequest('/me/media', params, env);
+  return instagramApiRequest('/me/media', params);
 }
 
-async function getSpecificInstagramMedia(mediaId, env) {
+async function getSpecificInstagramMedia(mediaId) {
   const fields = 'id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,username,children{id,media_type,media_url,thumbnail_url}';
-  return instagramApiRequest(`/${mediaId}`, { fields }, env);
+  return instagramApiRequest(`/${mediaId}`, { fields });
 }
 
 // --- Data Formatting Function ---
@@ -94,69 +90,51 @@ function formatInstagramMedia(mediaItems) {
   });
 }
 
-// --- Main Function Handler ---
-export async function onRequestGet(context) {
+// --- Main Route Handler ---
+export default async function handler(req, res) {
+  // Only allow GET requests
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   try {
-    const { request, env } = context;
-    
     // Debug: Check if environment variable is available
-    console.log('Access token exists:', !!env.INSTAGRAM_ACCESS_TOKEN);
-    console.log('Access token first 10 chars:', env.INSTAGRAM_ACCESS_TOKEN?.substring(0, 10));
+    console.log('Access token exists:', !!process.env.INSTAGRAM_ACCESS_TOKEN);
+    console.log('Access token first 10 chars:', process.env.INSTAGRAM_ACCESS_TOKEN?.substring(0, 10));
     
     debugLog('=== Instagram API GET Request Started ===');
-    const { searchParams } = new URL(request.url);
-    const mediaId = searchParams.get('id');
+    const { id: mediaId, limit, after } = req.query;
     
     // If a specific media ID is requested, fetch and return only that
     if (mediaId) {
       debugLog(`Fetching specific media: ${mediaId}`);
-      const mediaItem = await getSpecificInstagramMedia(mediaId, env);
+      const mediaItem = await getSpecificInstagramMedia(mediaId);
       const formattedMedia = formatInstagramMedia([mediaItem])[0];
       
-      return new Response(JSON.stringify(formattedMedia), {
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': `public, max-age=${CACHE_REVALIDATE_SECONDS}`,
-          'Access-Control-Allow-Origin': '*',
-        },
-      });
+      res.setHeader('Cache-Control', `public, max-age=${CACHE_REVALIDATE_SECONDS}`);
+      return res.status(200).json(formattedMedia);
     }
     
     // Otherwise, fetch the profile and media feed
-    const limit = parseInt(searchParams.get('limit')) || 25;
-    const after = searchParams.get('after');
-
-    const profile = await getInstagramProfile(env);
-    const media = await getInstagramMedia({ limit, after }, env);
+    const limitNum = parseInt(limit) || 25;
+    const profile = await getInstagramProfile();
+    const media = await getInstagramMedia({ limit: limitNum, after });
     const formattedPosts = formatInstagramMedia(media.data || []);
     
     debugLog('=== Instagram API GET Request Completed Successfully ===');
     
-    return new Response(JSON.stringify({
+    res.setHeader('Cache-Control', `public, max-age=${CACHE_REVALIDATE_SECONDS}`);
+    return res.status(200).json({
       profile,
       posts: formattedPosts,
       paging: media.paging || {},
-    }), {
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': `public, max-age=${CACHE_REVALIDATE_SECONDS}`,
-        'Access-Control-Allow-Origin': '*',
-      },
     });
 
   } catch (error) {
     debugLog('=== Instagram API GET Request Failed ===', { error: error.message });
-    // Differentiate between auth errors and other server errors
     const status = error.message.includes('token') ? 401 : 500;
-    
-    return new Response(JSON.stringify({ 
+    return res.status(status).json({ 
       error: `Failed to fetch from Instagram: ${error.message}` 
-    }), {
-      status,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      },
     });
   }
 }
