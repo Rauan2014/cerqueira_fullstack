@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const runtime = 'edge'
+
 const API_BASE_URL = 'https://graph.instagram.com';
 const CACHE_REVALIDATE_SECONDS = 900; // 15 minutes
 
