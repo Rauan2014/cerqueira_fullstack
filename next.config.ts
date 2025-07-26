@@ -8,12 +8,14 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   
+  // Remove output: 'export' - this conflicts with API routes and edge runtime
+  // Keep your API routes working with Cloudflare Pages
+  
   // Move serverComponentsExternalPackages to the root level (Next.js 15+ change)
   serverExternalPackages: ['async_hooks'],
   
   experimental: {
-    // Remove serverComponentsExternalPackages from here as it's deprecated
-    optimizeCss: true,
+    // Remove deprecated serverComponentsExternalPackages
   },
   
   // This webpack config is crucial for the edge runtime
