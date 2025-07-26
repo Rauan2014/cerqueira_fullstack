@@ -119,3 +119,39 @@
 .commentText {
   color: #333;
 }
+
+/* Add these to your InstagramPost.module.css */
+.loadingSpinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #666;
+}
+
+.errorMessage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #ff6b6b;
+  background: #f8f8f8;
+}
+
+.instagramLink {
+  display: inline-block;
+  margin-top: 10px;
+  color: #1da1f2;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.instagramLink:hover {
+  text-decoration: underline;
+}
+
+.postFooter {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
