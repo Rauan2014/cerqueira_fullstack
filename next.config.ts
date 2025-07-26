@@ -7,9 +7,15 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  
+  // Move serverComponentsExternalPackages to the root level (Next.js 15+ change)
+  serverExternalPackages: ['async_hooks'],
+  
   experimental: {
-    serverComponentsExternalPackages: ['async_hooks'],
+    // Remove serverComponentsExternalPackages from here as it's deprecated
+    optimizeCss: true,
   },
+  
   // This webpack config is crucial for the edge runtime
   webpack: (config, { isServer }) => {
     if (isServer) {

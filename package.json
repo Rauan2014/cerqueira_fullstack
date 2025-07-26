@@ -5,15 +5,17 @@
   "workspaces": [
     "worker"
   ],
+ 
   "scripts": {
     "dev": "next dev",
-    "build": "ANALYZE=true next build",
-    "build:cf": "next build && find .next -type f -name '*.map' -delete && npx @cloudflare/next-on-pages",
+    "build": "next build",
+    "build:cf": "next build && rm -rf .next/cache/webpack && rm -rf .next/cache/swc && find .next -name '*.map' -type f -delete && find .next -type f -size +20M -delete && npx @cloudflare/next-on-pages",
     "preview:cf": "npm run build:cf && wrangler pages dev .next",
     "start": "next start",
     "lint": "next lint",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts"
-  },
+  }
+,
   "dependencies": {
     "@cloudflare/kv-asset-handler": "^0.4.0",
     "@hookform/resolvers": "^3.10.0",
