@@ -45,10 +45,10 @@ export function middleware(request) {
 }
 
 // Configurar quais rotas devem ser protegidas pelo middleware
+// Removido '/api/instagram/admin/:path*' pois agora é uma Cloudflare Pages Function
 export const config = {
   matcher: [
     '/api/admin/:path*',
-    '/api/instagram/admin/:path*',
     '/api/contato/admin/:path*'
   ],
 };
