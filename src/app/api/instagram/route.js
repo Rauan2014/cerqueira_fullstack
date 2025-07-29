@@ -399,11 +399,350 @@ async function getSpecificInstagramMedia(mediaId, accessToken) {
   }
 }
 
-// Keep existing POST and PUT functions unchanged
+// POST function for creating Instagram media (publishing posts)
 export async function POST(request) {
-  // ... (same as original)
+  try {
+    debugLog('=== Instagram API POST Request Started ===');
+    
+    const body = await request.json();
+    const { media_type, media_url, caption, access_token } = body;
+    
+    debugLog('POST request parameters:', { 
+      media_type, 
+      hasMediaUrl: !!media_url,
+      hasCaption: !!caption,
+      hasAccessToken: !!access_token
+    });
+    
+    // Use provided access token or fallback to environment variable
+    const accessToken = access_token || process.env.INSTAGRAM_ACCESS_TOKEN;
+    
+    if (!accessToken) {
+      debugLog('ERROR: No access token provided');
+      return NextResponse.json(
+        { 
+          error: 'Access token required for posting',
+          debug: {
+            hasToken: false,
+            providedInRequest: !!access_token,
+            envVarPresent: !!process.env.INSTAGRAM_ACCESS_TOKEN
+          }
+        },
+        { status: 400 }
+      );
+    }
+    
+    // Validate required fields
+    if (!media_type || !media_url) {
+      debugLog('ERROR: Missing required fields');
+      return NextResponse.json(
+        { 
+          error: 'media_type and media_url are required',
+          debug: {
+            receivedFields: Object.keys(body),
+            missingFields: [
+              !media_type && 'media_type',
+              !media_url && 'media_url'
+            ].filter(Boolean)
+          }
+        },
+        { status: 400 }
+      );
+    }
+    
+    // Validate access token
+    const tokenValidation = await validateAccessToken(accessToken);
+    if (!tokenValidation.valid) {
+      debugLog('Token validation failed for POST');
+      return NextResponse.json(
+        { 
+          error: `Invalid access token: ${tokenValidation.error}`,
+          debug: {
+            tokenValid: false,
+            tokenError: tokenValidation.error
+          }
+        },
+        { status: 401 }
+      );
+    }
+    
+    debugLog('Token validation successful for POST');
+    
+    // Step 1: Create media container
+    debugLog('Creating media container...');
+    const containerUrl = `https://graph.instagram.com/me/media`;
+    const containerParams = new URLSearchParams({
+      access_token: accessToken,
+      media_type: media_type,
+      media_url: media_url
+    });
+    
+    if (caption) {
+      containerParams.append('caption', caption);
+    }
+    
+    const containerResponse = await fetch(containerUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: containerParams
+    });
+    
+    const containerData = await containerResponse.json();
+    
+    debugLog('Container creation response:', {
+      status: containerResponse.status,
+      data: containerData
+    });
+    
+    if (!containerResponse.ok) {
+      throw new Error(`Container creation failed: ${containerData.error?.message || 'Unknown error'}`);
+    }
+    
+    const containerId = containerData.id;
+    debugLog('Media container created successfully:', { containerId });
+    
+    // Step 2: Publish the media
+    debugLog('Publishing media...');
+    const publishUrl = `https://graph.instagram.com/me/media_publish`;
+    const publishParams = new URLSearchParams({
+      access_token: accessToken,
+      creation_id: containerId
+    });
+    
+    const publishResponse = await fetch(publishUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: publishParams
+    });
+    
+    const publishData = await publishResponse.json();
+    
+    debugLog('Publish response:', {
+      status: publishResponse.status,
+      data: publishData
+    });
+    
+    if (!publishResponse.ok) {
+      throw new Error(`Publishing failed: ${publishData.error?.message || 'Unknown error'}`);
+    }
+    
+    const mediaId = publishData.id;
+    debugLog('Media published successfully:', { mediaId });
+    
+    // Step 3: Fetch the published media details
+    debugLog('Fetching published media details...');
+    const publishedMedia = await getSpecificInstagramMedia(mediaId, accessToken);
+    const formattedMedia = formatInstagramMedia([publishedMedia])[0];
+    
+    const response = {
+      success: true,
+      media: formattedMedia,
+      containerId,
+      mediaId,
+      debug: {
+        tokenValid: true,
+        containerCreated: true,
+        mediaPublished: true,
+        originalData: publishedMedia
+      }
+    };
+    
+    debugLog('=== Instagram API POST Request Completed Successfully ===');
+    return NextResponse.json(response);
+    
+  } catch (error) {
+    debugLog('=== Instagram API POST Request Failed ===');
+    debugLog('POST error:', error.message);
+    console.error('Complete POST error stack:', error);
+    
+    return NextResponse.json(
+      { 
+        error: `Error creating Instagram post: ${error.message}`,
+        debug: {
+          errorType: error.constructor.name,
+          errorMessage: error.message,
+          timestamp: new Date().toISOString()
+        }
+      },
+      { status: 500 }
+    );
+  }
 }
 
+// PUT function for updating Instagram media (mainly for updating captions)
 export async function PUT(request) {
-  // ... (same as original)
+  try {
+    debugLog('=== Instagram API PUT Request Started ===');
+    
+    const body = await request.json();
+    const { media_id, caption, access_token } = body;
+    
+    debugLog('PUT request parameters:', { 
+      media_id,
+      hasCaption: !!caption,
+      hasAccessToken: !!access_token
+    });
+    
+    // Use provided access token or fallback to environment variable
+    const accessToken = access_token || process.env.INSTAGRAM_ACCESS_TOKEN;
+    
+    if (!accessToken) {
+      debugLog('ERROR: No access token provided for PUT');
+      return NextResponse.json(
+        { 
+          error: 'Access token required for updating posts',
+          debug: {
+            hasToken: false,
+            providedInRequest: !!access_token,
+            envVarPresent: !!process.env.INSTAGRAM_ACCESS_TOKEN
+          }
+        },
+        { status: 400 }
+      );
+    }
+    
+    // Validate required fields
+    if (!media_id) {
+      debugLog('ERROR: Missing media_id');
+      return NextResponse.json(
+        { 
+          error: 'media_id is required for updating posts',
+          debug: {
+            receivedFields: Object.keys(body),
+            missingFields: ['media_id']
+          }
+        },
+        { status: 400 }
+      );
+    }
+    
+    if (!caption) {
+      debugLog('ERROR: Missing caption');
+      return NextResponse.json(
+        { 
+          error: 'caption is required for updating posts',
+          debug: {
+            receivedFields: Object.keys(body),
+            missingFields: ['caption']
+          }
+        },
+        { status: 400 }
+      );
+    }
+    
+    // Validate access token
+    const tokenValidation = await validateAccessToken(accessToken);
+    if (!tokenValidation.valid) {
+      debugLog('Token validation failed for PUT');
+      return NextResponse.json(
+        { 
+          error: `Invalid access token: ${tokenValidation.error}`,
+          debug: {
+            tokenValid: false,
+            tokenError: tokenValidation.error
+          }
+        },
+        { status: 401 }
+      );
+    }
+    
+    debugLog('Token validation successful for PUT');
+    
+    // Check if media exists and get current details
+    debugLog('Fetching current media details...');
+    let currentMedia;
+    try {
+      currentMedia = await getSpecificInstagramMedia(media_id, accessToken);
+      debugLog('Current media found:', {
+        id: currentMedia.id,
+        currentCaption: currentMedia.caption,
+        mediaType: currentMedia.media_type
+      });
+    } catch (error) {
+      debugLog('Media not found:', error.message);
+      return NextResponse.json(
+        { 
+          error: `Media not found: ${error.message}`,
+          debug: {
+            mediaId: media_id,
+            tokenValid: true
+          }
+        },
+        { status: 404 }
+      );
+    }
+    
+    // Update media caption
+    debugLog('Updating media caption...');
+    const updateUrl = `https://graph.instagram.com/${media_id}`;
+    const updateParams = new URLSearchParams({
+      access_token: accessToken,
+      caption: caption
+    });
+    
+    const updateResponse = await fetch(updateUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: updateParams
+    });
+    
+    const updateData = await updateResponse.json();
+    
+    debugLog('Update response:', {
+      status: updateResponse.status,
+      data: updateData
+    });
+    
+    if (!updateResponse.ok) {
+      throw new Error(`Update failed: ${updateData.error?.message || 'Unknown error'}`);
+    }
+    
+    // Fetch updated media details
+    debugLog('Fetching updated media details...');
+    const updatedMedia = await getSpecificInstagramMedia(media_id, accessToken);
+    const formattedMedia = formatInstagramMedia([updatedMedia])[0];
+    
+    const response = {
+      success: true,
+      media: formattedMedia,
+      changes: {
+        caption: {
+          old: currentMedia.caption,
+          new: caption
+        }
+      },
+      debug: {
+        tokenValid: true,
+        mediaFound: true,
+        updateSuccessful: updateData.success || true,
+        originalData: updatedMedia
+      }
+    };
+    
+    debugLog('=== Instagram API PUT Request Completed Successfully ===');
+    return NextResponse.json(response);
+    
+  } catch (error) {
+    debugLog('=== Instagram API PUT Request Failed ===');
+    debugLog('PUT error:', error.message);
+    console.error('Complete PUT error stack:', error);
+    
+    return NextResponse.json(
+      { 
+        error: `Error updating Instagram post: ${error.message}`,
+        debug: {
+          errorType: error.constructor.name,
+          errorMessage: error.message,
+          timestamp: new Date().toISOString()
+        }
+      },
+      { status: 500 }
+    );
+  }
 }
