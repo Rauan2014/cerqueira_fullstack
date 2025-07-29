@@ -7,23 +7,28 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  
-  // Remove output: 'export' - this conflicts with API routes and edge runtime
-  // Keep your API routes working with Cloudflare Pages
-  
-  // Move serverComponentsExternalPackages to the root level (Next.js 15+ change)
   serverExternalPackages: ['async_hooks'],
-  
   experimental: {
-    // Remove deprecated serverComponentsExternalPackages
+    // serverComponentsExternalPackages is deprecated
   },
   
-  // This webpack config is crucial for the edge runtime
   webpack: (config, { isServer }) => {
+    // Your existing config for the server
     if (isServer) {
-      // Exclude node:crypto from the edge bundle, as 'jose' uses Web Crypto
       config.externals.push('node:crypto');
     }
+    
+    // ✅ ADD THIS PART to force code splitting
+    // This prevents a single large file for edge functions.
+    config.optimization.splitChunks = {
+      ...config.optimization.splitChunks,
+      chunks: 'all',
+      // This sets a maximum size for each chunk, in bytes.
+      // 1024 * 1024 = 1MB. Files will be smaller than this.
+      maxSize: 1024 * 1024, 
+    };
+    
+    // Return the modified config
     return config;
   },
 };

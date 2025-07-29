@@ -1,6 +1,0 @@
-name = "cerqueira_fullstack"
-compatibility_date = "2024-07-25"
-
-
-# This line should be at the top level
-compatibility_flags = ["nodejs_compat"]
