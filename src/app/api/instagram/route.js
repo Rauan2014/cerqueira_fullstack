@@ -2,85 +2,85 @@ import { NextResponse } from 'next/server';
 
 export const runtime = 'edge';
 
-// Função para buscar os posts do Instagram
-async function getInstagramMedia(accessToken, limit, after) {
-  const fields = 'id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,username,children{id,media_type,media_url,thumbnail_url}';
-  let url = `https://graph.instagram.com/me/media?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
-  if (after) {
-    url += `&after=${after}`;
-  }
-
-  const response = await fetch(url);
-  if (!response.ok) {
-    const errorData = await response.json();
-    console.error('Instagram Media API Error:', errorData);
-    throw new Error(`Erro ao buscar mídia do Instagram: ${errorData.error?.message || response.statusText}`);
-  }
-  return response.json();
-}
-
-// Função para formatar os dados recebidos
-function formatInstagramMedia(mediaData) {
-  return mediaData.map(item => {
-    const images = [];
-    if (item.media_type === 'CAROUSEL_ALBUM' && item.children?.data) {
-      item.children.data.forEach(child => {
-        if (child.media_type === 'IMAGE' && child.media_url) {
-          images.push(child.media_url);
-        } else if (child.media_type === 'VIDEO' && child.thumbnail_url) {
-          images.push(child.thumbnail_url); // Usa thumbnail para vídeos no carrossel
-        }
-      });
-    } else if (item.media_type === 'IMAGE' && item.media_url) {
-      images.push(item.media_url);
-    } else if (item.media_type === 'VIDEO' && item.thumbnail_url) {
-      images.push(item.thumbnail_url);
-    }
-
-    return {
-      id: item.id,
-      titulo: item.caption?.substring(0, 50).split('\n')[0] || 'Post sem título',
-      data: item.timestamp,
-      legenda: item.caption || '',
-      images: images,
-      mediaType: item.media_type,
-      mediaUrl: item.media_url,
-      thumbnailUrl: item.thumbnail_url,
-      permalink: item.permalink,
-      username: item.username,
-      isCarousel: item.media_type === 'CAROUSEL_ALBUM'
-    };
-  });
-}
-
-// Função principal da rota GET
 export async function GET(request, context) {
+  // Envolvemos todo o código em um bloco try...catch para capturar qualquer erro.
   try {
-    const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get('limit')) || 25;
-    const after = searchParams.get('after');
+    console.log('[API INSTAGRAM] Rota iniciada.');
 
-    // ✅ Acessa o token diretamente do contexto da Cloudflare.
+    // Acessa o token de acesso. Esta é a forma correta para o ambiente da Cloudflare.
     const accessToken = context.env.INSTAGRAM_ACCESS_TOKEN;
 
+    // 1. Verifica se o token foi encontrado
     if (!accessToken) {
-      console.error('INSTAGRAM_ACCESS_TOKEN não encontrado no ambiente do servidor.');
-      return NextResponse.json({ error: 'Configuração do servidor incompleta: Token do Instagram não encontrado.' }, { status: 500 });
+      console.error('[API INSTAGRAM] ERRO: A variável INSTAGRAM_ACCESS_TOKEN não foi encontrada no ambiente da Cloudflare.');
+      // Retorna um erro claro em formato JSON em vez de travar o servidor
+      return NextResponse.json(
+        { error: 'Configuração do servidor incorreta. O token de acesso do Instagram não está definido.' },
+        { status: 500 }
+      );
     }
     
-    // Busca os dados da API do Instagram
-    const mediaResponse = await getInstagramMedia(accessToken, limit, after);
-    const formattedPosts = formatInstagramMedia(mediaResponse.data || []);
+    console.log('[API INSTAGRAM] Token de acesso encontrado. Prosseguindo...');
 
-    return NextResponse.json({
-      posts: formattedPosts,
-      paging: mediaResponse.paging || {}
+    // 2. Define os parâmetros para a chamada da API
+    const fields = 'id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,children{media_type,media_url,thumbnail_url}';
+    const url = `https://graph.instagram.com/me/media?fields=${fields}&access_token=${accessToken}`;
+    
+    console.log('[API INSTAGRAM] Fazendo a chamada para a API do Instagram...');
+
+    // 3. Faz a chamada para a API do Instagram
+    const response = await fetch(url);
+
+    // 4. Verifica se a chamada foi bem-sucedida
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('[API INSTAGRAM] ERRO da API do Instagram:', errorData);
+      return NextResponse.json(
+        { error: `Falha ao comunicar com a API do Instagram: ${errorData.error?.message || 'Erro desconhecido'}` },
+        { status: response.status }
+      );
+    }
+    
+    console.log('[API INSTAGRAM] Chamada para a API bem-sucedida. Processando dados...');
+    
+    const { data: posts } = await response.json();
+
+    // 5. Formata a resposta
+    const formattedPosts = posts.map(post => {
+      let images = [];
+      if (post.media_type === 'CAROUSEL_ALBUM') {
+        images = post.children.data.map(child => child.media_type === 'VIDEO' ? child.thumbnail_url : child.media_url);
+      } else if (post.media_type === 'IMAGE') {
+        images.push(post.media_url);
+      } else if (post.media_type === 'VIDEO') {
+        images.push(post.thumbnail_url);
+      }
+
+      return {
+          id: post.id,
+          legenda: post.caption,
+          images: images,
+          mediaType: post.media_type,
+          permalink: post.permalink,
+          data: post.timestamp,
+      };
     });
 
+    console.log(`[API INSTAGRAM] Processamento finalizado. Retornando ${formattedPosts.length} posts.`);
+
+    return NextResponse.json({ posts: formattedPosts });
+
   } catch (error) {
-    console.error('Erro na rota /api/instagram:', error);
+    // Se qualquer erro inesperado acontecer, ele será capturado aqui.
+    console.error('[API INSTAGRAM] ERRO INESPERADO NA ROTA:', error);
+    
+    // Retorna uma resposta JSON com o erro detalhado.
     return NextResponse.json(
-      { error: `Erro interno do servidor: ${error.message}` },
+      { 
+        error: 'Ocorreu um erro crítico no servidor.',
+        errorMessage: error.message,
+        errorStack: error.stack // Opcional: pode ajudar na depuração
+      },
       { status: 500 }
     );
   }
