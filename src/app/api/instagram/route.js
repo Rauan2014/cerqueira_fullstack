@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 
-// Remove edge runtime for Cloudflare compatibility
+// Try removing edge runtime first - this is often the culprit
 // export const runtime = 'edge';
+
+// Or if you must use edge runtime, try this approach:
+export const runtime = 'edge';
 
 function debugLog(message, data = null) {
   console.log(`[Instagram API Debug] ${message}`, data ? JSON.stringify(data, null, 2) : '');
