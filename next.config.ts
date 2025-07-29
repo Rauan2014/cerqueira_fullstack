@@ -19,13 +19,13 @@ const nextConfig: NextConfig = {
   },
   
   // This webpack config is crucial for the edge runtime
-  //webpack: (config, { isServer }) => {
-  //  if (isServer) {
+  webpack: (config, { isServer }) => {
+    if (isServer) {
       // Exclude node:crypto from the edge bundle, as 'jose' uses Web Crypto
-   //   config.externals.push('node:crypto');
-  //  }
-  //  return config;
- // },
+      config.externals.push('node:crypto');
+    }
+    return config;
+  },
 };
 
 export default nextConfig;

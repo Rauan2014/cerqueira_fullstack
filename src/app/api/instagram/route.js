@@ -1,10 +1,25 @@
 import { NextResponse } from 'next/server';
 
-// REMOVE THIS LINE - Edge runtime is causing issues on Cloudflare
-// export const runtime = 'edge';
+// Keep edge runtime for Cloudflare compatibility
+export const runtime = 'edge';
 
 function debugLog(message, data = null) {
   console.log(`[Instagram API Debug] ${message}`, data ? JSON.stringify(data, null, 2) : '');
+}
+
+// Function to get environment variables in Cloudflare Workers context
+function getCloudflareEnv() {
+  // Try different ways to access environment in Cloudflare Workers
+  if (typeof globalThis !== 'undefined' && globalThis.process?.env) {
+    return globalThis.process.env;
+  }
+  
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env;
+  }
+  
+  // For Cloudflare Workers, env might be passed differently
+  return {};
 }
 
 async function validateAccessToken(accessToken) {
@@ -13,18 +28,23 @@ async function validateAccessToken(accessToken) {
     const response = await fetch(url);
     const data = await response.json();
     
+    debugLog('Token validation response:', data);
+    
     if (!response.ok) {
       throw new Error(`Token validation failed: ${data.error?.message || 'Unknown error'}`);
     }
     
     return { valid: true, data };
   } catch (error) {
+    debugLog('Token validation error:', error.message);
     return { valid: false, error: error.message };
   }
 }
 
 async function getInstagramProfile(accessToken) {
   try {
+    debugLog('Fetching Instagram profile...');
+    
     const fieldsToFetch = [
       'account_type',
       'id',
@@ -36,18 +56,23 @@ async function getInstagramProfile(accessToken) {
     const response = await fetch(url);
     const data = await response.json();
     
+    debugLog('Profile API Response Status:', response.status);
+    
     if (!response.ok) {
       throw new Error(`Profile fetch error: ${data.error?.message || 'Unknown error'}`);
     }
     
     return data;
   } catch (error) {
+    debugLog('Profile fetch error:', error.message);
     throw new Error(`Error connecting to Instagram: ${error.message}`);
   }
 }
 
 async function getInstagramMedia(accessToken, limit = 25, after = null) {
   try {
+    debugLog(`Fetching Instagram media - Limit: ${limit}, After: ${after}`);
+    
     const fieldsToFetch = [
       'id',
       'caption',
@@ -69,8 +94,10 @@ async function getInstagramMedia(accessToken, limit = 25, after = null) {
     const response = await fetch(url);
     const data = await response.json();
     
+    debugLog('Media API Response Status:', response.status);
+    
     if (!response.ok) {
-      console.error('Instagram Media API error:', data);
+      console.error('Instagram Media API full error response:', data);
       throw new Error(`Media fetch error: ${data.error?.message || 'Unknown error'}`);
     }
     
@@ -79,6 +106,7 @@ async function getInstagramMedia(accessToken, limit = 25, after = null) {
       paging: data.paging || {}
     };
   } catch (error) {
+    debugLog('Media fetch error:', error.message);
     throw new Error(`Error fetching Instagram posts: ${error.message}`);
   }
 }
@@ -140,6 +168,7 @@ function formatInstagramMedia(media) {
       };
       
     } catch (error) {
+      debugLog(`Error processing media item ${index + 1}:`, error.message);
       return {
         id: item.id || 'unknown',
         titulo: 'Error processing post',
@@ -158,9 +187,9 @@ function formatInstagramMedia(media) {
   });
 }
 
-export async function GET(request) {
+export async function GET(request, context) {
   try {
-    console.log('Instagram API request started');
+    debugLog('=== Instagram API GET Request Started ===');
     
     const { searchParams } = new URL(request.url);
     const debug = searchParams.get('debug');
@@ -168,30 +197,45 @@ export async function GET(request) {
     const limit = parseInt(searchParams.get('limit')) || 25;
     const after = searchParams.get('after');
     
-    // Enhanced debug mode for Cloudflare testing
+    // Get environment variables (Cloudflare Workers style)
+    const env = getCloudflareEnv();
+    
+    // Try multiple ways to get the access token in Cloudflare environment
+    let accessToken = env.INSTAGRAM_ACCESS_TOKEN || 
+                      process.env?.INSTAGRAM_ACCESS_TOKEN ||
+                      context?.env?.INSTAGRAM_ACCESS_TOKEN;
+    
+    // Enhanced debug mode for Cloudflare
     if (debug === 'true') {
-      const hasToken = !!process.env.INSTAGRAM_ACCESS_TOKEN;
-      const tokenLength = process.env.INSTAGRAM_ACCESS_TOKEN?.length || 0;
-      const allEnvVars = Object.keys(process.env);
-      const instagramVars = allEnvVars.filter(key => key.includes('INSTAGRAM'));
+      const allEnvKeys = Object.keys(env);
+      const instagramKeys = allEnvKeys.filter(key => key.includes('INSTAGRAM'));
       
-      console.log('Debug mode - Token check:', { hasToken, tokenLength });
+      debugLog('Debug mode activated', {
+        hasToken: !!accessToken,
+        tokenLength: accessToken?.length || 0,
+        platform: 'cloudflare-edge',
+        envKeys: allEnvKeys.length,
+        instagramKeys: instagramKeys,
+        contextKeys: context ? Object.keys(context) : [],
+        hasProcessEnv: !!process.env,
+        hasGlobalThis: !!globalThis.process?.env
+      });
       
-      // If token exists, test it
-      if (hasToken) {
+      if (accessToken) {
         try {
-          const testUrl = `https://graph.instagram.com/me?fields=id,username&access_token=${process.env.INSTAGRAM_ACCESS_TOKEN}`;
+          const testUrl = `https://graph.instagram.com/me?fields=id,username&access_token=${accessToken}`;
           const testResponse = await fetch(testUrl);
           const testData = await testResponse.json();
           
           return NextResponse.json({
             debug: true,
-            platform: 'cloudflare-node',
-            environment: process.env.NODE_ENV,
+            platform: 'cloudflare-pages',
+            runtime: 'edge',
             token: {
               found: true,
-              length: tokenLength,
-              valid: testResponse.ok
+              length: accessToken.length,
+              valid: testResponse.ok,
+              preview: accessToken.substring(0, 15) + '...'
             },
             instagramTest: {
               status: testResponse.status,
@@ -199,69 +243,110 @@ export async function GET(request) {
               data: testResponse.ok ? testData : null,
               error: !testResponse.ok ? testData : null
             },
-            environmentVariables: {
-              instagram: instagramVars,
-              total: allEnvVars.length
+            environment: {
+              totalEnvVars: allEnvKeys.length,
+              instagramVars: instagramKeys,
+              hasContext: !!context,
+              hasProcessEnv: !!process.env
             }
           });
         } catch (testError) {
           return NextResponse.json({
             debug: true,
-            platform: 'cloudflare-node',
-            token: { found: true, length: tokenLength },
+            platform: 'cloudflare-pages',
             error: 'Failed to test Instagram API',
-            details: testError.message
+            details: testError.message,
+            token: { found: true, length: accessToken.length }
           });
         }
       } else {
         return NextResponse.json({
           debug: true,
-          platform: 'cloudflare-node',
-          environment: process.env.NODE_ENV,
+          platform: 'cloudflare-pages',
+          runtime: 'edge',
           token: { found: false },
-          environmentVariables: {
-            instagram: instagramVars,
-            total: allEnvVars.length,
-            available: allEnvVars.slice(0, 10) // Show first 10 for debugging
+          environment: {
+            totalEnvVars: allEnvKeys.length,
+            instagramVars: instagramKeys,
+            availableKeys: allEnvKeys.slice(0, 10),
+            hasContext: !!context,
+            hasProcessEnv: !!process.env,
+            contextKeys: context ? Object.keys(context) : []
           },
-          error: 'INSTAGRAM_ACCESS_TOKEN not found in environment'
+          error: 'INSTAGRAM_ACCESS_TOKEN not found in any environment source',
+          suggestions: [
+            'Check Cloudflare Pages environment variables',
+            'Ensure variable is set for Production environment',
+            'Redeploy after setting environment variables',
+            'Check if using Cloudflare Workers binding syntax'
+          ]
         });
       }
     }
     
-    // Regular API logic
-    const accessToken = process.env.INSTAGRAM_ACCESS_TOKEN;
-    
+    // Check if access token is available
     if (!accessToken) {
-      console.error('Instagram Access Token not found');
+      debugLog('ERROR: Instagram Access Token not found');
       return NextResponse.json(
         { 
-          error: 'Instagram Access Token not configured',
+          error: 'Instagram Access Token not configured in Cloudflare environment',
           debug: {
             hasToken: false,
-            platform: 'cloudflare-node',
-            suggestion: 'Check Cloudflare Pages environment variables'
+            platform: 'cloudflare-pages',
+            runtime: 'edge',
+            suggestion: 'Check Cloudflare Pages environment variables and redeploy'
           }
         },
         { status: 500 }
       );
     }
     
-    // Validate token
+    debugLog('Access token found:', { length: accessToken.length });
+    
+    // Validate access token
     const tokenValidation = await validateAccessToken(accessToken);
     if (!tokenValidation.valid) {
+      debugLog('Token validation failed');
       return NextResponse.json(
         { 
           error: `Invalid access token: ${tokenValidation.error}`,
-          debug: { tokenValid: false, platform: 'cloudflare-node' }
+          debug: {
+            tokenValid: false,
+            platform: 'cloudflare-pages',
+            tokenError: tokenValidation.error
+          }
         },
         { status: 401 }
       );
     }
     
-    // Get profile and media
+    debugLog('Token validation successful');
+    
+    // If specific media ID is requested
+    if (mediaId) {
+      debugLog(`Fetching specific media: ${mediaId}`);
+      try {
+        const mediaData = await getSpecificInstagramMedia(mediaId, accessToken);
+        const formattedMedia = formatInstagramMedia([mediaData])[0];
+        debugLog('Specific media fetch successful');
+        return NextResponse.json(formattedMedia);
+      } catch (error) {
+        debugLog('Specific media fetch failed:', error.message);
+        return NextResponse.json(
+          { error: error.message, debug: { mediaId, platform: 'cloudflare-pages' } },
+          { status: 404 }
+        );
+      }
+    }
+    
+    // Fetch user profile
+    debugLog('Fetching user profile...');
     const profile = await getInstagramProfile(accessToken);
+    
+    // Fetch all media
+    debugLog('Fetching media posts...');
     const mediaResponse = await getInstagramMedia(accessToken, limit, after);
+    
     const formattedMedia = formatInstagramMedia(mediaResponse.data);
     
     const response = {
@@ -277,25 +362,66 @@ export async function GET(request) {
       hasMore: !!mediaResponse.paging.next,
       debug: {
         tokenValid: true,
-        platform: 'cloudflare-node'
+        platform: 'cloudflare-pages',
+        runtime: 'edge'
       }
     };
     
+    debugLog('=== Instagram API GET Request Completed Successfully ===');
     return NextResponse.json(response);
     
   } catch (error) {
-    console.error('Instagram API error:', error);
+    debugLog('=== Instagram API GET Request Failed ===');
+    debugLog('Final error:', error.message);
+    console.error('Complete error stack:', error);
     
     return NextResponse.json(
       { 
         error: `Error processing request: ${error.message}`,
         debug: {
           errorType: error.constructor.name,
-          platform: 'cloudflare-node',
+          errorMessage: error.message,
+          platform: 'cloudflare-pages',
+          runtime: 'edge',
           timestamp: new Date().toISOString()
         }
       },
       { status: 500 }
     );
+  }
+}
+
+// Helper function for specific media
+async function getSpecificInstagramMedia(mediaId, accessToken) {
+  try {
+    debugLog(`Fetching specific media: ${mediaId}`);
+    
+    const fieldsToFetch = [
+      'id',
+      'caption',
+      'media_type',
+      'media_url',
+      'permalink',
+      'thumbnail_url',
+      'timestamp',
+      'username',
+      'children{id,media_type,media_url,thumbnail_url}'
+    ].join(',');
+    
+    const url = `https://graph.instagram.com/${mediaId}?fields=${fieldsToFetch}&access_token=${accessToken}`;
+    
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    debugLog('Specific media response:', { status: response.status });
+    
+    if (!response.ok) {
+      throw new Error(`Error fetching media: ${data.error?.message || 'Media not found'}`);
+    }
+    
+    return data;
+  } catch (error) {
+    debugLog('Specific media fetch error:', error.message);
+    throw new Error(`Error fetching specific media: ${error.message}`);
   }
 }
