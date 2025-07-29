@@ -97,6 +97,7 @@ async function getInstagramMedia(accessToken, limit = 25, after = null) {
         statusText: response.statusText,
         error: data.error
       });
+      console.error('Instagram Media API full error response:', data); // Added for more detailed error logging
       throw new Error(`Media fetch error: ${data.error?.message || 'Unknown error'}`);
     }
     
