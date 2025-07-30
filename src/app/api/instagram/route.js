@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-export const runtime = 'edge';
+//export const runtime = 'edge';
 
 export async function GET(request, context) {
   // Envolvemos todo o código em um bloco try...catch para capturar qualquer erro.
