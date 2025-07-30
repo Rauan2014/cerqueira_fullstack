@@ -2,22 +2,13 @@
   "name": "cerqueira-fullstack",
   "version": "0.1.0",
   "private": true,
-  "workspaces": [
-    "worker"
-  ],
- 
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:cf": "next build && rm -rf .next/cache/webpack && rm -rf .next/cache/swc && find .next -name '*.map' -type f -delete && find .next -type f -size +20M -delete && npx @cloudflare/next-on-pages",
-    "preview:cf": "npm run build:cf && wrangler pages dev .next",
     "start": "next start",
-    "lint": "next lint",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts"
-  }
-,
+    "lint": "next lint"
+  },
   "dependencies": {
-    "@cloudflare/kv-asset-handler": "^0.4.0",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.4",
@@ -47,7 +38,6 @@
     "@radix-ui/react-toggle-group": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.6",
     "class-variance-authority": "^0.7.1",
-    "cloudflare": "^4.2.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.6",
     "date-fns": "^4.1.0",
@@ -71,8 +61,6 @@
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.12",
     "@cloudflare/workers-types": "^4.20250109.0",
-    "@eslint/eslintrc": "^3",
-    "@next/bundle-analyzer": "^15.4.4",
     "@types/node": "^20.19.9",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -80,15 +68,7 @@
     "eslint-config-next": "15.1.4",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "turbo": "^2.3.3",
     "typescript": "^5",
-    "vercel": "^39.1.1",
     "wrangler": "^4.12.0"
-  },
-  "overrides": {
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "date-fns": "^4.1.0",
-    "vercel": "$vercel"
   }
 }

@@ -1,14 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Your ESLint and TypeScript settings can stay
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
-
-  // This is the essential part to fix the file size error
+  
+  // This config splits large files and fixes the size error
   webpack: (config) => {
     config.optimization.splitChunks = {
       chunks: 'all',
