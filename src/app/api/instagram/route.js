@@ -7,12 +7,12 @@ export async function GET(request, context) {
   try {
     console.log('[API INSTAGRAM] Rota iniciada.');
 
-    // Acessa o token de acesso. Esta é a forma correta para o ambiente da Cloudflare.
+    // Acessa o token de acesso do ambiente.
     const accessToken = process.env.INSTAGRAM_ACCESS_TOKEN;
 
     // 1. Verifica se o token foi encontrado
     if (!accessToken) {
-      console.error('[API INSTAGRAM] ERRO: A variável INSTAGRAM_ACCESS_TOKEN não foi encontrada no ambiente da Cloudflare.');
+      console.error('[API INSTAGRAM] ERRO: A variável INSTAGRAM_ACCESS_TOKEN não foi encontrada no ambiente.');
       // Retorna um erro claro em formato JSON em vez de travar o servidor
       return NextResponse.json(
         { error: 'Configuração do servidor incorreta. O token de acesso do Instagram não está definido.' },

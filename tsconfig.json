@@ -29,7 +29,6 @@
     // This is the corrected line
     "types": [
       "node",
-      "@cloudflare/workers-types",
       "next",
       "next/server"
     ],
