@@ -1,6 +1,6 @@
 'use server'
 // import { getCloudflareContext } from '@opennextjs/cloudflare'
-import { cookies } from 'next/cookies'
+import { cookies } from 'next/headers'
 
 /**
  * Increment counter and log access

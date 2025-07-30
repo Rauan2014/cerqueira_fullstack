@@ -107,7 +107,7 @@ const ToastViewport: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
 type ToastActionElement = React.ReactElement<typeof ToastAction>
 
 export {
-  type ToastProps,
+  
   type ToastActionElement,
   ToastProvider,
   ToastViewport,

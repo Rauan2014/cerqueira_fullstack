@@ -29,7 +29,9 @@
     // This is the corrected line
     "types": [
       "node",
-      "@cloudflare/workers-types"
+      "@cloudflare/workers-types",
+      "next",
+      "next/server"
     ],
     "target": "ES2017"
   },
