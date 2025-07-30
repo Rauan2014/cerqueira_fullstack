@@ -62,6 +62,10 @@ async function updateConfig(request, context) {
   }
 }
 
-// Wrap the handlers with authentication and export them
-export const GET = withAuth(getConfig);
-export const PUT = withAuth(updateConfig);
+export async function GET(request, context) {
+  return withAuth(getConfig)(request, context);
+}
+
+export async function PUT(request, context) {
+  return withAuth(updateConfig)(request, context);
+}
