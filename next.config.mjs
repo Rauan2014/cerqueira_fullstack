@@ -6,7 +6,7 @@ const nextConfig = {
   },
   typescript: {
     ignoreBuildErrors: true,
-g  },
+  },
 
   // This is the essential part to fix the file size error
   webpack: (config) => {
