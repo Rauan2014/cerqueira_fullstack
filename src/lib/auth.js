@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server';
-import { jwtVerify } from 'jose';
+import jwt from '@tsndr/cloudflare-worker-jwt';
 
-// Chave secreta para verificação de tokens JWT
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'cerqueira-psicologia-secret-key-2025'
-);
+// The JWT_SECRET must be available in the Cloudflare environment.
+// Note: This library expects the secret to be a string, not a TextEncoder object.
 
 /**
  * Wraps an API route handler with JWT authentication.
@@ -13,6 +11,9 @@ const JWT_SECRET = new TextEncoder().encode(
  */
 export function withAuth(handler) {
   return async (request, context) => {
+    // Get the secret from the Cloudflare environment context
+    const JWT_SECRET = context.env.JWT_SECRET || 'cerqueira-psicologia-secret-key-2025';
+
     const authHeader = request.headers.get('Authorization');
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -25,14 +26,23 @@ export function withAuth(handler) {
     const token = authHeader.split(' ')[1];
 
     try {
-      const { payload: decoded } = await jwtVerify(token, JWT_SECRET);
+      // Use the new library to verify the token
+      const isValid = await jwt.verify(token, JWT_SECRET);
+
+      if (!isValid) {
+        throw new Error('Token inválido');
+      }
+
+      // Decode the token to get the payload
+      const decoded = jwt.decode(token);
       
       // Add user info to the context for the handler to use
-      context.user = decoded;
+      context.user = decoded.payload;
 
       // Proceed to the original handler
       return handler(request, context);
     } catch (error) {
+      console.error('JWT Verification Error:', error.message);
       return NextResponse.json(
         { error: 'Acesso não autorizado. Token inválido ou expirado.' },
         { status: 401 }
