@@ -1,13 +1,19 @@
 import { NextResponse } from 'next/server';
 import jwt from '@tsndr/cloudflare-worker-jwt';
 
+/**
+ * @typedef {import('next/server').NextRequest} NextRequest
+ * @typedef {import('next/server').NextResponse} NextResponse
+ * @typedef {{ env: { DB: any, JWT_SECRET: string }, params?: Record<string, string | string[]> }} RouteContext
+ */
+
 // The JWT_SECRET must be available in the Cloudflare environment.
 // Note: This library expects the secret to be a string, not a TextEncoder object.
 
 /**
  * Wraps an API route handler with JWT authentication.
- * @param {function} handler The original API route handler.
- * @returns {function} The wrapped handler with authentication.
+ * @param {(request: NextRequest, context: RouteContext) => Promise<NextResponse>} handler The original API route handler.
+ * @returns {(request: NextRequest, context: RouteContext) => Promise<NextResponse>} The wrapped handler with authentication.
  */
 export function withAuth(handler) {
   return async (request, context) => {
