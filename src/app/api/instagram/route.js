@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export const runtime = 'edge';
 
-export async function GET(request, context) {
+export async function GET() {
   // Envolvemos todo o código em um bloco try...catch para capturar qualquer erro.
   try {
     console.log('[API INSTAGRAM] Rota iniciada.');

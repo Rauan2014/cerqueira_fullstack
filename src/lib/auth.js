@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+import * as jose from 'jose';
 
 /**
  * @typedef {import('next/server').NextRequest} NextRequest
@@ -15,7 +15,6 @@ import jwt from 'jsonwebtoken';
  */
 export function withAuth(handler) {
   return async (request, context) => {
-    // Get the secret from the environment variables
     const JWT_SECRET = process.env.JWT_SECRET || 'cerqueira-psicologia-secret-key-2025';
 
     const authHeader = request.headers.get('Authorization');
@@ -30,13 +29,11 @@ export function withAuth(handler) {
     const token = authHeader.split(' ')[1];
 
     try {
-      // Verify the token using jsonwebtoken
-      const decoded = jwt.verify(token, JWT_SECRET);
+      const secret = new TextEncoder().encode(JWT_SECRET);
+      const { payload } = await jose.jwtVerify(token, secret);
 
-      // Add user info to the context for the handler to use
-      context.user = decoded;
+      context.user = payload;
 
-      // Proceed to the original handler
       return handler(request, context);
     } catch (error) {
       console.error('JWT Verification Error:', error.message);
