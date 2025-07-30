@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Header from "../Header/Header";
-import Footer from "../Footer/Footer";
-import InstagramPost from "../InstagramPost/InstagramPost";
+import Header from "../Header/Header.jsx";
+import Footer from "../Footer/Footer.jsx";
+import InstagramPost from "../InstagramPost/InstagramPost.jsx";
 import styles from "./BlogPage.module.css";
 
 const BlogPage = () => {

@@ -13,8 +13,13 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
+<<<<<<< HEAD
   title: 'Cerqueira Psicologia',
   description: 'Criado para ajudar a sua jornada emocional.'
+=======
+  title: 'Psicologia Cerqueira',
+  description: 'O seu próximo melhor psicologo ;)'
+>>>>>>> parent of 19ab1bd (Revert "Fix: LAyout and instagram route")
 }
 
 export default function RootLayout({

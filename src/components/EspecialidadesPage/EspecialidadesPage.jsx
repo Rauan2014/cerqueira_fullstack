@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import Header from '../../components/Header/Header';
-import Footer from '../../components/Footer/Footer';
+import Header from '../../components/Header/Header.jsx';
+import Footer from '../../components/Footer/Footer.jsx';
 import Image from 'next/image'; // Import the Next.js Image component
 import styles from './EspecialidadesPage.module.css';
 
