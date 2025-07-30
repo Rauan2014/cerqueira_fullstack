@@ -1,25 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Your ESLint and TypeScript settings can stay
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
-  },
-  serverExternalPackages: ['async_hooks'],
-  experimental: {},
+g  },
 
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals.push('node:crypto');
-    }
-
-    // Configuração agressiva para forçar a divisão de código
+  // This is the essential part to fix the file size error
+  webpack: (config) => {
     config.optimization.splitChunks = {
       chunks: 'all',
-      maxSize: 500 * 1024, // Força a divisão em arquivos de no máximo 500KB
+      maxSize: 1024 * 1024, // Splits files larger than 1MB
     };
-
     return config;
   },
 };

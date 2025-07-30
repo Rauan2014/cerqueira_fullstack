@@ -1,7 +1,7 @@
 // Create: app/api/instagram-debug/route.js
 import { NextResponse } from 'next/server';
 
-//export const runtime = 'edge';
+export const runtime = 'edge';
 
 export async function GET() {
   try {
