@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "analyze": "cross-env ANALYZE=true next build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -62,6 +63,7 @@
     "@types/node": "^20.19.9",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.1.4",
     "postcss": "^8",
