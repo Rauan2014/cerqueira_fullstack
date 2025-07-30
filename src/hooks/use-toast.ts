@@ -1,194 +1,106 @@
-"use client"
+'use server'
+// import { getCloudflareContext } from '@opennextjs/cloudflare'
+// import { headers } from 'next/headers' // Commented out since it's not currently used
+import { cookies } from 'next/headers'
 
-// Inspired by react-hot-toast library
-import * as React from "react"
+/**
+ * Increment counter and log access
+ *
+ * Database connection instructions:
+ * 1. Uncomment the import { getCloudflareContext } line
+ * 2. Uncomment the const cf = await getCloudflareContext() line
+ * 3. Uncomment the database operation code
+ * 4. Make sure D1 database binding is configured in wrangler.toml
+ * 5. Required database tables:
+ *    - counters table: name(TEXT), value(INTEGER)
+ *    - access_logs table: ip(TEXT), path(TEXT), accessed_at(DATETIME)
+ */
+export async function incrementAndLog() {
+  // const cf = await getCloudflareContext()
+  // Remove unused variable - commented out for now since it's not being used
+  // const headersList = headers()
+  const cookieStore = await cookies()
 
-import type {
-  ToastActionElement,
-  ToastProps,
-} from "@/components/ui/toast"
+  // Get current count from cookie or start at 0
+  let currentCount = parseInt(cookieStore.get('page_views')?.value || '0')
 
-const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+  // Increment count
+  currentCount += 1
 
-type ToasterToast = ToastProps & {
-  id: string
-  title?: React.ReactNode
-  description?: React.ReactNode
-  action?: ToastActionElement
-}
-
-const actionTypes = {
-  ADD_TOAST: "ADD_TOAST",
-  UPDATE_TOAST: "UPDATE_TOAST",
-  DISMISS_TOAST: "DISMISS_TOAST",
-  REMOVE_TOAST: "REMOVE_TOAST",
-} as const
-
-let count = 0
-
-function genId() {
-  count = (count + 1) % Number.MAX_SAFE_INTEGER
-  return count.toString()
-}
-
-type ActionType = typeof actionTypes
-
-type Action =
-  | {
-      type: ActionType["ADD_TOAST"]
-      toast: ToasterToast
-    }
-  | {
-      type: ActionType["UPDATE_TOAST"]
-      toast: Partial<ToasterToast>
-    }
-  | {
-      type: ActionType["DISMISS_TOAST"]
-      toastId?: ToasterToast["id"]
-    }
-  | {
-      type: ActionType["REMOVE_TOAST"]
-      toastId?: ToasterToast["id"]
-    }
-
-interface State {
-  toasts: ToasterToast[]
-}
-
-const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
-
-const addToRemoveQueue = (toastId: string) => {
-  if (toastTimeouts.has(toastId)) {
-    return
-  }
-
-  const timeout = setTimeout(() => {
-    toastTimeouts.delete(toastId)
-    dispatch({
-      type: "REMOVE_TOAST",
-      toastId: toastId,
-    })
-  }, TOAST_REMOVE_DELAY)
-
-  toastTimeouts.set(toastId, timeout)
-}
-
-export const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case "ADD_TOAST":
-      return {
-        ...state,
-        toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
-      }
-
-    case "UPDATE_TOAST":
-      return {
-        ...state,
-        toasts: state.toasts.map((t) =>
-          t.id === action.toast.id ? { ...t, ...action.toast } : t
-        ),
-      }
-
-    case "DISMISS_TOAST": {
-      const { toastId } = action
-
-      // ! Side effects ! - This could be extracted into a dismissToast() action,
-      // but I'll keep it here for simplicity
-      if (toastId) {
-        addToRemoveQueue(toastId)
-      } else {
-        state.toasts.forEach((toast) => {
-          addToRemoveQueue(toast.id)
-        })
-      }
-
-      return {
-        ...state,
-        toasts: state.toasts.map((t) =>
-          t.id === toastId || toastId === undefined
-            ? {
-                ...t,
-                open: false,
-              }
-            : t
-        ),
-      }
-    }
-    case "REMOVE_TOAST":
-      if (action.toastId === undefined) {
-        return {
-          ...state,
-          toasts: [],
-        }
-      }
-      return {
-        ...state,
-        toasts: state.toasts.filter((t) => t.id !== action.toastId),
-      }
-  }
-}
-
-const listeners: Array<(state: State) => void> = []
-
-let memoryState: State = { toasts: [] }
-
-function dispatch(action: Action) {
-  memoryState = reducer(memoryState, action)
-  listeners.forEach((listener) => {
-    listener(memoryState)
-  })
-}
-
-type Toast = Omit<ToasterToast, "id">
-
-function toast({ ...props }: Toast) {
-  const id = genId()
-
-  const update = (props: ToasterToast) =>
-    dispatch({
-      type: "UPDATE_TOAST",
-      toast: { ...props, id },
-    })
-  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
-
-  dispatch({
-    type: "ADD_TOAST",
-    toast: {
-      ...props,
-      id,
-      open: true,
-      onOpenChange: (open) => {
-        if (!open) dismiss()
-      },
-    },
+  // Store updated count in cookie (expires in 1 year)
+  cookieStore.set('page_views', currentCount.toString(), {
+    expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    path: '/'
   })
 
+  // Log this access in memory (will be lost on restart)
+  const accessTime = new Date().toISOString()
+  const recentAccessList = JSON.parse(cookieStore.get('recent_access')?.value || '[]')
+  recentAccessList.unshift({ accessed_at: accessTime })
+
+  // Keep only the 5 most recent accesses
+  while (recentAccessList.length > 5) {
+    recentAccessList.pop()
+  }
+
+  // Store recent access list in cookie
+  cookieStore.set('recent_access', JSON.stringify(recentAccessList), {
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week
+    path: '/'
+  })
+
+  // Database operation example (commented out):
+  // const headersList = headers()
+  // const { results: countResults } = await cf.env.DB.prepare(
+  //   'INSERT INTO counters (name, value) VALUES (?, 1) ON CONFLICT (name) DO UPDATE SET value = value + 1 RETURNING value'
+  // )
+  //   .bind('page_views')
+  //   .all()
+
+  // await cf.env.DB.prepare('INSERT INTO access_logs (ip, path, accessed_at) VALUES (?, ?, datetime())')
+  //   .bind(
+  //     headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'unknown',
+  //     headersList.get('x-forwarded-host') || '/'
+  //   )
+  //   .run()
+
+  // const { results: logs } = await cf.env.DB.prepare('SELECT * FROM access_logs ORDER BY accessed_at DESC LIMIT 5').all()
+
   return {
-    id: id,
-    dismiss,
-    update,
+    count: currentCount,
+    recentAccess: recentAccessList
   }
 }
 
-function useToast() {
-  const [state, setState] = React.useState<State>(memoryState)
+/**
+ * Get current counter value and recent access logs
+ *
+ * Database query instructions:
+ * 1. When using database, get Cloudflare context with getCloudflareContext()
+ * 2. Use cf.env.DB.prepare to execute SQL queries
+ * 3. For local development, you can use wrangler to simulate the database
+ */
+export async function getStats() {
+  const cookieStore = await cookies()
 
-  React.useEffect(() => {
-    listeners.push(setState)
-    return () => {
-      const index = listeners.indexOf(setState)
-      if (index > -1) {
-        listeners.splice(index, 1)
-      }
-    }
-  }, [state])
+  // Get current count from cookie or default to 0
+  const currentCount = parseInt(cookieStore.get('page_views')?.value || '0')
+
+  // Get recent access list from cookie or default to empty array
+  const recentAccessList = JSON.parse(cookieStore.get('recent_access')?.value || '[]')
+
+  // Database query example (commented out):
+  // const cf = await getCloudflareContext()
+  // const { results: count } = await cf.env.DB.prepare('SELECT value FROM counters WHERE name = ?')
+  //   .bind('page_views')
+  //   .all()
+
+  // const { results: logs } = await cf.env.DB.prepare(
+  //   'SELECT accessed_at FROM access_logs ORDER BY accessed_at DESC LIMIT 5'
+  // ).all()
 
   return {
-    ...state,
-    toast,
-    dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
+    count: currentCount,
+    recentAccess: recentAccessList
   }
 }
-
-export { useToast, toast }

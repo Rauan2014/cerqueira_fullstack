@@ -1,7 +1,6 @@
 'use server'
 // import { getCloudflareContext } from '@opennextjs/cloudflare'
-import { headers } from 'next/headers'
-import { cookies } from 'next/headers'
+import { cookies } from 'next/cookies'
 
 /**
  * Increment counter and log access
@@ -17,7 +16,8 @@ import { cookies } from 'next/headers'
  */
 export async function incrementAndLog() {
   // const cf = await getCloudflareContext()
-  const headersList = headers()
+  // Remove unused variable - commented out for now since it's not being used
+  // const headersList = headers()
   const cookieStore = await cookies()
 
   // Get current count from cookie or start at 0
@@ -49,6 +49,7 @@ export async function incrementAndLog() {
   })
 
   // Database operation example (commented out):
+  // const headersList = headers()
   // const { results: countResults } = await cf.env.DB.prepare(
   //   'INSERT INTO counters (name, value) VALUES (?, 1) ON CONFLICT (name) DO UPDATE SET value = value + 1 RETURNING value'
   // )
