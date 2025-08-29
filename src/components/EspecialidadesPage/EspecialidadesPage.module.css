@@ -22,7 +22,7 @@
 }
 
 .card {
-  background-color: #e6e6e6;
+  background-color: #ffffff;
   border-radius: 5px;
   padding: 1.5rem;
   max-width: 350px;
@@ -39,7 +39,7 @@
 .cardText h3 {
   font-size: 1.3rem;
   margin-bottom: 0.5rem;
-  color: #333;
+  color: #0a8a8a;
 }
 
 .cardText p {
