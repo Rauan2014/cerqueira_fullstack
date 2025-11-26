@@ -23,13 +23,19 @@
 
 .card {
   background-color: #ffffff;
-  border-radius: 5px;
+  border-radius: 12px;
   padding: 1.5rem;
   max-width: 350px;
   display: flex;
   flex-direction: column;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: 100%;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(10, 138, 138, 0.15);
 }
 
 .cardText {
@@ -64,12 +70,12 @@
   .main {
     padding: 1rem;
   }
-  
+
   .especialidadesSection {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .card {
     width: 100%;
   }

@@ -19,23 +19,28 @@ const HomePage = () => {
   return (
     <div className={styles.container}>
       <Header />
-      
+
       <main className={styles.main}>
         <section className={styles.welcomeSection}>
-          <h1 className={styles.title}>Bem-vindo à Cerqueira Psicologia!</h1>
-          <p className={styles.description}>
-            Espaço de acolhimento emocional com psicólogos especializados. Atuamos com 
-            abordagens personalizadas para ansiedade, estresse, relacionamentos e 
-            desenvolvimento pessoal. Nossos profissionais utilizam métodos comprovados e 
-            técnicas eficazes para promover equilíbrio e bem-estar. Sua jornada é única, vamos 
-            caminhar juntos. Agende sua consulta!
-          </p>
-          
+          <div className={styles.welcomeContent}>
+            <h1 className={styles.title}>Bem-vindo ao meu espaço de acolhimento!</h1>
+            <p className={styles.description}>
+              Como psicólogo especializado, ofereço um espaço seguro para sua jornada emocional.
+              Atuo com abordagens personalizadas para ansiedade, estresse, relacionamentos e
+              desenvolvimento pessoal. Utilizo métodos comprovados e técnicas eficazes para
+              promover equilíbrio e bem-estar. Sua jornada é única, vamos caminhar juntos.
+            </p>
+            <p className={styles.signature}>Dr. Marcos</p>
+            <a href="https://wa.me/5511965759830" target="_blank" rel="noopener noreferrer" className={styles.ctaButton}>
+              Agendar Consulta
+            </a>
+          </div>
+
           <div className={styles.carouselWrapper}>
             <ImageCarousel images={carouselImages} />
           </div>
         </section>
-        
+
         <section className={styles.locationSection}>
           <h2 className={styles.sectionTitle}>Unidade de Poá:</h2>
           <div className={styles.mapWrapper}>
@@ -47,7 +52,7 @@ const HomePage = () => {
           </div>
         </section>
       </main>
-      
+
       <Footer />
     </div>
   );

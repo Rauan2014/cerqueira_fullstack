@@ -2,12 +2,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: rgba(14,124,137,255);
+  background-color: rgba(14, 124, 137, 255);
   color: white;
   padding: 1rem 2rem;
   width: 100%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-bottom: 5px solid rgba(88,213,227,255);
+  border-bottom: 5px solid rgba(88, 213, 227, 255);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .logo {
@@ -55,7 +58,7 @@
     flex-direction: column;
     padding: 1rem;
   }
-  
+
   .navigation ul {
     margin-top: 1rem;
     gap: 1rem;

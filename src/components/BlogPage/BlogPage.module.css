@@ -1,14 +1,16 @@
-
 .container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
+
 .postStats {
-  display: flex;             /* make sure it’s visible */
+  display: flex;
+  /* make sure it’s visible */
   align-items: center;
   gap: 1rem;
-  color: #333;               /* dark on light bg */
+  color: #333;
+  /* dark on light bg */
 }
 
 .postStats span {
@@ -32,11 +34,11 @@
 
 .blogContent {
   width: 100%;
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
   color: #333;
 }
 
@@ -74,12 +76,12 @@
   .main {
     padding: 1rem;
   }
-  
+
   .pageTitle {
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
   }
-  
+
   .blogContent {
     gap: 2rem;
   }

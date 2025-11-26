@@ -12,28 +12,38 @@ const Navigation = () => {
     <nav className={styles.navigation}>
       <ul>
         <li>
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className={`${styles.navLink} ${pathname === '/' ? styles.active : ''}`}
           >
             Início
           </Link>
         </li>
         <li>
-          <Link 
-            href="/blog" 
+          <Link
+            href="/blog"
             className={`${styles.navLink} ${pathname === '/blog' ? styles.active : ''}`}
           >
             Blog
           </Link>
         </li>
         <li>
-          <Link 
-            href="/especialidades" 
+          <Link
+            href="/especialidades"
             className={`${styles.navLink} ${pathname === '/especialidades' ? styles.active : ''}`}
           >
             Especialidades
           </Link>
+        </li>
+        <li>
+          <a
+            href="https://wa.me/5511965759830"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${styles.navLink} ${styles.ctaButton}`}
+          >
+            Agendar
+          </a>
         </li>
       </ul>
     </nav>

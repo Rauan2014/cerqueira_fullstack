@@ -2,11 +2,17 @@
 .postContainer {
   width: 100%;
   box-sizing: border-box;
-  padding: 1rem;
-  background: #fff;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 0;
+  transition: transform 0.2s ease;
+}
+
+.postContainer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
 }
 
 .postHeader {
@@ -17,7 +23,8 @@
   font-size: 1.25rem;
   font-weight: bold;
   margin: 0;
-  color: #0a8a8a; /* COR ATUALIZADA */
+  color: #0a8a8a;
+  /* COR ATUALIZADA */
 }
 
 .postMeta span {
@@ -47,7 +54,7 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   color: #fff;
   border: none;
   padding: 0.5rem;
@@ -69,7 +76,8 @@
   margin-top: 0.5rem;
 }
 
-.dot, .activeDot {
+.dot,
+.activeDot {
   width: 0.75rem;
   height: 0.75rem;
   border-radius: 50%;
