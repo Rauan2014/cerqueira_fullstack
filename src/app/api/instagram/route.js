@@ -19,13 +19,13 @@ export async function GET() {
         { status: 500 }
       );
     }
-    
+
     console.log('[API INSTAGRAM] Token de acesso encontrado. Prosseguindo...');
 
     // 2. Define os parâmetros para a chamada da API
     const fields = 'id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,children{media_type,thumbnail_url}';
     const url = `https://graph.instagram.com/me/media?fields=${fields}&access_token=${accessToken}`;
-    
+
     console.log('[API INSTAGRAM] Fazendo a chamada para a API do Instagram...');
 
     // 3. Faz a chamada para a API do Instagram
@@ -40,9 +40,9 @@ export async function GET() {
         { status: response.status }
       );
     }
-    
+
     console.log('[API INSTAGRAM] Chamada para a API bem-sucedida. Processando dados...');
-    
+
     const { data: posts } = await response.json();
 
     // 5. Formata a resposta
@@ -57,12 +57,13 @@ export async function GET() {
       }
 
       return {
-          id: post.id,
-          legenda: post.caption,
-          images: images,
-          mediaType: post.media_type,
-          permalink: post.permalink,
-          data: post.timestamp,
+        id: post.id,
+        legenda: post.caption,
+        images: images,
+        mediaType: post.media_type,
+        media_url: post.media_url,
+        permalink: post.permalink,
+        data: post.timestamp,
       };
     });
 
@@ -73,10 +74,10 @@ export async function GET() {
   } catch (error) {
     // Se qualquer erro inesperado acontecer, ele será capturado aqui.
     console.error('[API INSTAGRAM] ERRO INESPERADO NA ROTA:', error);
-    
+
     // Retorna uma resposta JSON com o erro detalhado.
     return NextResponse.json(
-      { 
+      {
         error: 'Ocorreu um erro crítico no servidor.',
         errorMessage: error.message,
         errorStack: error.stack // Opcional: pode ajudar na depuração
