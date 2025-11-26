@@ -21,21 +21,21 @@ const InstagramPost = ({ post, index, totalPosts }) => {
   // Updated to work with your new API structure
   const getPostImages = () => {
     if (!post) return [];
-    
+
     // Your API returns an 'images' array - use that first
     if (post.images && Array.isArray(post.images) && post.images.length > 0) {
       return post.images;
     }
-    
+
     // Fallback for single media items based on mediaType
     if (post.mediaType === 'IMAGE' && post.media_url) {
       return [post.media_url];
     }
-    
+
     if (post.mediaType === 'VIDEO' && post.thumbnail_url) {
       return [post.thumbnail_url];
     }
-    
+
     // Additional fallbacks for different field naming conventions
     const fallbackFields = ['media_url', 'thumbnail_url', 'image_url', 'url'];
     for (const field of fallbackFields) {
@@ -43,7 +43,7 @@ const InstagramPost = ({ post, index, totalPosts }) => {
         return [post[field]];
       }
     }
-    
+
     return [];
   };
 
@@ -55,14 +55,14 @@ const InstagramPost = ({ post, index, totalPosts }) => {
     // Your API returns 'data' field with timestamp
     const dateToFormat = dateString || post.data || post.timestamp;
     const d = dateToFormat ? new Date(dateToFormat) : new Date();
-    
+
     if (isNaN(d)) return dateToFormat || '';
-    
+
     return d.toLocaleDateString('pt-BR', {
-      day: '2-digit', 
-      month: '2-digit', 
+      day: '2-digit',
+      month: '2-digit',
       year: 'numeric',
-      hour: '2-digit', 
+      hour: '2-digit',
       minute: '2-digit'
     });
   };
@@ -84,9 +84,9 @@ const InstagramPost = ({ post, index, totalPosts }) => {
   const currentSrc = images[currentImageIndex];
 
   const onLoad = () => setImageLoaded(true);
-  const onError = () => { 
-    setImageLoaded(true); 
-    setImageError(true); 
+  const onError = () => {
+    setImageLoaded(true);
+    setImageError(true);
     console.error('Erro ao carregar imagem:', currentSrc);
   };
 
@@ -114,13 +114,14 @@ const InstagramPost = ({ post, index, totalPosts }) => {
             ‹
           </button>
         )}
-        
+
         <div className={styles.mediaWrapper}>
           {isVideo ? (
-            <video 
-              className={styles.media} 
-              controls 
+            <video
+              className={styles.media}
+              controls
               poster={images[0]} // Use first image as poster
+              onLoadedData={() => setImageLoaded(true)}
             >
               <source src={post.media_url} type="video/mp4" />
               Seu navegador não suporta o elemento de vídeo.
@@ -137,18 +138,18 @@ const InstagramPost = ({ post, index, totalPosts }) => {
           ) : (
             <div className={styles.noMedia}>Mídia não disponível</div>
           )}
-          
+
           {!imageLoaded && !imageError && (
             <div className={styles.loadingSpinner}>Carregando...</div>
           )}
-          
+
           {imageError && (
             <div className={styles.errorMessage}>
               Erro ao carregar imagem
             </div>
           )}
         </div>
-        
+
         {hasMultiple && (
           <button
             className={styles.navButton}
@@ -205,9 +206,9 @@ const InstagramPost = ({ post, index, totalPosts }) => {
       {/* Add link to original Instagram post */}
       {post.permalink && (
         <footer className={styles.postFooter}>
-          <a 
-            href={post.permalink} 
-            target="_blank" 
+          <a
+            href={post.permalink}
+            target="_blank"
             rel="noopener noreferrer"
             className={styles.instagramLink}
           >
