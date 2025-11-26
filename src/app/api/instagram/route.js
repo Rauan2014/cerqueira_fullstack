@@ -23,7 +23,7 @@ export async function GET() {
     console.log('[API INSTAGRAM] Token de acesso encontrado. Prosseguindo...');
 
     // 2. Define os parâmetros para a chamada da API
-    const fields = 'id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,children{media_type,thumbnail_url}';
+    const fields = 'id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,children{media_type,media_url,thumbnail_url}';
     const url = `https://graph.instagram.com/me/media?fields=${fields}&access_token=${accessToken}`;
 
     console.log('[API INSTAGRAM] Fazendo a chamada para a API do Instagram...');
